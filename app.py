@@ -30,8 +30,8 @@ def main():
     #if st.checkbox("Show Source Data"):
     st.write(source_df.sample(10)) 
     
-    st.subheader("Data Hasil Proses "+str(source_df.shape))
     df = getdata('x1.csv')
+    st.subheader("Data Hasil Proses "+str(df.shape))
     st.write(df.sample(10))
     
     fig1= plt.figure()
@@ -40,8 +40,8 @@ def main():
     st.write(fig1)
     st.write("Data Tidak Seimbang (Imbalanced Data)")
     
-    st.subheader("Data Hasil Proses Menggunakan SMOTE "+str(source_df.shape))
     df2 = getdata('x2.csv')
+    st.subheader("Data Hasil Proses Menggunakan SMOTE "+str(df2.shape))
     st.write(df2.sample(10))
     
     
