@@ -198,7 +198,7 @@ def apps():
         df2, df2['kelulusan'] = sm.fit_resample(df1.drop('kelulusan',axis=1), df1['kelulusan'])
         
         
-        choice = st.radio("Pilih Cluster",['Decision Tree','Naive Bayes','KNN'])
+        choice = st.radio("Pilih Metode",['Decision Tree','Naive Bayes','KNN'])
         if choice == 'Decision Tree':
             dt(df,df1,df2)
         elif choice == 'Naive Bayes': 
