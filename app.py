@@ -32,7 +32,7 @@ def main():
     
     df = getdata('x1.csv')
     st.subheader("Data Hasil Proses "+str(df.shape))
-    st.write(df.sample(10))
+    st.write(df)
     
     fig1= plt.figure()
     sns.countplot(x ='Label1', data=df)
@@ -42,7 +42,7 @@ def main():
     
     df2 = getdata('x2.csv')
     st.subheader("Data Hasil Proses Menggunakan SMOTE "+str(df2.shape))
-    st.write(df2.sample(10))
+    st.write(df2)
     
     
     fig2= plt.figure()
