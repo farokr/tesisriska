@@ -51,7 +51,7 @@ def eda():
     st.title("Klasifikasi Kelulusan Mahasiswa")
     st.header("Eksplorasi Data")
 
-    source_df = getdata('data_mahasiswa.csv',separator=';')
+    source_df = getdata('DATA_MAHASISWA.csv',separator=';')
     st.subheader("Sumber Data "+str(source_df.shape))
     #if st.checkbox("Show Source Data"):
     st.write(source_df) 
