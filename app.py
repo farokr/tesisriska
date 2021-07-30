@@ -28,7 +28,7 @@ def main():
     print()
     st.subheader("Sumber Data "+str(source_df.shape))
     #if st.checkbox("Show Source Data"):
-    st.write(source_df.sample(10)) 
+    st.write(source_df) 
     
     df = getdata('x1.csv')
     st.subheader("Data Hasil Proses "+str(df.shape))
