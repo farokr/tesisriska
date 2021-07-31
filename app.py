@@ -157,6 +157,26 @@ def knn(df,df1,df2):
     st.header("KNN")
     dfm1 = df.copy()
     
+    st.subheader("Menentukan Nilai n_neighbor Optimal")
+    neighbors = np.arange(2, 11)
+    train_accuracy = np.empty(len(neighbors))
+    test_accuracy = np.empty(len(neighbors))
+  
+    for i, k in enumerate(neighbors):
+        knn = KNeighborsClassifier(n_neighbors=k).fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
+        train_accuracy[i] = knn.score(df2.drop('kelulusan',axis=1), df2['kelulusan'])
+        test_accuracy[i] = knn.score(df1.drop('kelulusan',axis=1), df1['kelulusan'])
+  
+    fig3= plt.figure()
+    plt.plot(neighbors, test_accuracy, label = 'Testing dataset Accuracy')
+    plt.plot(neighbors, train_accuracy, label = 'Training dataset Accuracy')
+    
+    plt.legend()
+    plt.xlabel('n_neighbors')
+    plt.ylabel('Accuracy')
+    st.write(fig3)
+    st.write("Nilai Optimal n_neighbor: 3")
+    
     parameter  = st.slider('Nilai K', min_value=2, max_value=10, step=1, value=3)
     model =  KNeighborsClassifier(n_neighbors=parameter).fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
     ypred = model.predict(df1.drop('kelulusan',axis=1))
@@ -198,7 +218,7 @@ def apps():
         df2, df2['kelulusan'] = sm.fit_resample(df1.drop('kelulusan',axis=1), df1['kelulusan'])
         
         
-        choice = st.radio("Pilih Metode",['Decision Tree','Naive Bayes','KNN'])
+        choice = st.radio("Pilih Cluster",['Decision Tree','Naive Bayes','KNN'])
         if choice == 'Decision Tree':
             dt(df,df1,df2)
         elif choice == 'Naive Bayes': 
