@@ -98,25 +98,39 @@ def dt(df,df1,df2):
     dfm1['prediksi'] = ypred
     dfm1['prediksi'] = dfm1['prediksi'].map(arr_map)
     
-    recall1 = '{:.2f}'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' ))
-    recall2 = '{:.2f}'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )) 
-    precision1 = '{:.2f}'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' ))
-    precision2 = '{:.2f}'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' ))
-    accuracy = '{:.2f}'.format(metrics.accuracy_score(dfm1['kelulusan'], dfm1['prediksi']))
+    recall1 = '{:.2f}%'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' )*100)
+    recall2 = '{:.2f}%'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )*100) 
+    precision1 = '{:.2f}%'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU')*100)
+    precision2 = '{:.2f}%'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )*100)
+    
+    accuracy = '{:.2f}%'.format(metrics.accuracy_score(dfm1['kelulusan'], dfm1['prediksi'])*100)
+    
     st.subheader('Classification Report')
     st.write("Accuracy:",accuracy)
     st.write("Recall TEPAT WAKTU :",recall1)
     st.write("Recall TERLAMBAT :",recall2)
     st.write("Precision TEPAT WAKTU :",precision1)
     st.write("Precision TERLAMBAT :",precision2)
+        
+
+    
     st.subheader('Confusion Matrix')
     fig= plt.figure()
     confusionmatrix = pd.crosstab(dfm1['kelulusan'], dfm1['prediksi'], rownames=['Aktual'], colnames=['Prediksi'])
     sns.heatmap(confusionmatrix, annot=True, fmt='g',cmap='Blues')
     st.write(fig)
     st.subheader('Hasil Perhitungan')
-    st.write(dfm1)
+             
+    choice = st.selectbox("Pilih Prediksi",['TERLAMBAT','TEPAT WAKTU'])
+    res = dfm1.loc[dfm1['prediksi'] == choice]
+    st.subheader('Prediksi '+str(choice)+':'+str(res.shape[0]))
+    st.write(res)
+
+             
     st.markdown(get_table_download_link(dfm1,filename = "datahasilDecisionTree.xlsx"), unsafe_allow_html=True)
+    
+    
+    
 #end of dt()
      
 def nb(df,df1,df2):
@@ -130,11 +144,13 @@ def nb(df,df1,df2):
     dfm1['prediksi'] = dfm1['prediksi'].map(arr_map)
     
     
-    recall1 = '{:.2f}'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' ))
-    recall2 = '{:.2f}'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )) 
-    precision1 = '{:.2f}'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' ))
-    precision2 = '{:.2f}'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' ))
-    accuracy = '{:.2f}'.format(metrics.accuracy_score(dfm1['kelulusan'], dfm1['prediksi']))
+    recall1 = '{:.2f}%'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' )*100)
+    recall2 = '{:.2f}%'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )*100) 
+    precision1 = '{:.2f}'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' )*100)
+    precision1 = '{:.2f}%'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' )*100)
+    precision2 = '{:.2f}%'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )*100)
+    accuracy = '{:.2f}%'.format(metrics.accuracy_score(dfm1['kelulusan'], dfm1['prediksi'])*100)
+   
     st.subheader('Classification Report')
     st.write("Accuracy:",accuracy)
     st.write("Recall TEPAT WAKTU :",recall1)
@@ -148,7 +164,10 @@ def nb(df,df1,df2):
     sns.heatmap(confusionmatrix, annot=True, fmt='g',cmap='Blues')
     st.write(fig)
     st.subheader('Hasil Perhitungan')
-    st.write(dfm1)
+    choice = st.selectbox("Pilih Prediksi",['TERLAMBAT','TEPAT WAKTU'])
+    res = dfm1.loc[dfm1['prediksi'] == choice]
+    st.subheader('Prediksi '+str(choice)+':'+str(res.shape[0]))
+    st.write(res)
     st.markdown(get_table_download_link(dfm1,filename = "datahasilNaiveBayes.xlsx"), unsafe_allow_html=True)
     
 #END OF NB
@@ -175,7 +194,6 @@ def knn(df,df1,df2):
     plt.xlabel('n_neighbors')
     plt.ylabel('Accuracy')
     st.write(fig3)
-    st.write("Nilai Optimal n_neighbor: 3")
     
     parameter  = st.slider('Nilai K', min_value=2, max_value=10, step=1, value=3)
     model =  KNeighborsClassifier(n_neighbors=parameter).fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
@@ -184,11 +202,11 @@ def knn(df,df1,df2):
     dfm1['prediksi'] = ypred
     dfm1['prediksi'] = dfm1['prediksi'].map(arr_map)
 
-    recall1 = '{:.2f}'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' ))
-    recall2 = '{:.2f}'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )) 
-    precision1 = '{:.2f}'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' ))
-    precision2 = '{:.2f}'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' ))
-    accuracy = '{:.2f}'.format(metrics.accuracy_score(dfm1['kelulusan'], dfm1['prediksi']))
+    recall1 = '{:.2f}%'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' )*100)
+    recall2 = '{:.2f}%'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )*100) 
+    precision1 = '{:.2f}%'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' )*100)
+    precision2 = '{:.2f}%'.format(metrics.precision_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )*100)
+    accuracy = '{:.2f}%'.format(metrics.accuracy_score(dfm1['kelulusan'], dfm1['prediksi'])*100)
     st.subheader('Classification Report')
     st.write("Accuracy:",accuracy)
     st.write("Recall TEPAT WAKTU :",recall1)
@@ -201,7 +219,10 @@ def knn(df,df1,df2):
     sns.heatmap(confusionmatrix, annot=True, fmt='g',cmap='Blues')
     st.write(fig)
     st.subheader('Hasil Perhitungan')
-    st.write(dfm1)
+    choice = st.selectbox("Pilih Prediksi",['TERLAMBAT','TEPAT WAKTU'])
+    res = dfm1.loc[dfm1['prediksi'] == choice]
+    st.subheader('Prediksi '+str(choice)+':'+str(res.shape[0]))
+    st.write(res)
     st.markdown(get_table_download_link(dfm1,filename = "datahasiKNN.xlsx"), unsafe_allow_html=True)
 #END OF KNN     
 
