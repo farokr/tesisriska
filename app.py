@@ -13,6 +13,7 @@ from imblearn.over_sampling import SMOTE
 import base64
 import io
 
+
 arr_map = {1:'TEPAT WAKTU', 0:'TERLAMBAT'}
 
 def proses_data(df):
@@ -112,7 +113,13 @@ def dt(df,df1,df2):
     st.write("Precision TEPAT WAKTU :",precision1)
     st.write("Precision TERLAMBAT :",precision2)
         
-
+    st.subheader('Tree Visualization')
+    fig = plt.figure(figsize=(80,40))
+    _ = tree.plot_tree(model,
+                       feature_names=['jk','ips_1', 'ips_2', 'ips_3','ips_4', 'ips_5', 'ips_6', 'ips_7', 'ipk', 'total_sks', 'pekerjaan'],  
+                       class_names=['TERLAMBAT','TEPAT WAKTU'],
+                       filled=True)
+    st.pyplot(fig,clear_figure=True,dpi=100)
     
     st.subheader('Confusion Matrix')
     fig= plt.figure()
