@@ -126,30 +126,47 @@ def dt(df,df1,df2):
     confusionmatrix = pd.crosstab(dfm1['kelulusan'], dfm1['prediksi'], rownames=['Aktual'], colnames=['Prediksi'])
     sns.heatmap(confusionmatrix, annot=True, fmt='g',cmap='Blues')
     st.write(fig)
+    
     st.subheader('Hasil Perhitungan')
              
-    choice = st.selectbox("Pilih Prediksi",['TERLAMBAT','TEPAT WAKTU'])
-    res = dfm1.loc[dfm1['prediksi'] == choice]
-    st.subheader('Prediksi '+str(choice)+':'+str(res.shape[0]))
-    st.write(res)
+    res1 =  dfm1.loc[dfm1['prediksi'] == 'TERLAMBAT']
+    res2 =  dfm1.loc[dfm1['prediksi'] == 'TEPAT WAKTU']
+    
+    
+    st.subheader('Semua Prediksi :'+str(dfm1.shape[0]))      
+    st.write(dfm1)
 
+    st.subheader('Prediksi TERLAMBAT :'+str(res1.shape[0]))      
+    st.write(res1)       
+
+    st.subheader('Prediksi TEPAT WAKTU:'+str(res2.shape[0]))      
+    st.write(res2)
              
     st.markdown(get_table_download_link(dfm1,filename = "datahasilDecisionTree.xlsx"), unsafe_allow_html=True)
     
     
     
 #end of dt()
+
+@st.cache
+def trainnb(df,df2,df1):
+    model = GaussianNB().fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
+    ypred = model.predict(df1.drop('kelulusan',axis=1))
+    df['prediksi'] = ypred
+    df['prediksi'] = df['prediksi'].map(arr_map)
+    return df
+    
+    
      
 def nb(df,df1,df2):
     st.header("Naive Bayes")
-    dfm1 = df.copy()
+    #dfm1 = df.copy()
     
-    model = GaussianNB().fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
-    ypred = model.predict(df1.drop('kelulusan',axis=1))
-    
-    dfm1['prediksi'] = ypred
-    dfm1['prediksi'] = dfm1['prediksi'].map(arr_map)
-    
+    #model = GaussianNB().fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
+    #ypred = model.predict(df1.drop('kelulusan',axis=1))
+    #dfm1['prediksi'] = ypred
+    #dfm1['prediksi'] = dfm1['prediksi'].map(arr_map)
+    dfm1 = trainnb(df,df2,df1)
     
     recall1 = '{:.2f}%'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' )*100)
     recall2 = '{:.2f}%'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )*100) 
@@ -171,10 +188,20 @@ def nb(df,df1,df2):
     sns.heatmap(confusionmatrix, annot=True, fmt='g',cmap='Blues')
     st.write(fig)
     st.subheader('Hasil Perhitungan')
-    choice = st.selectbox("Pilih Prediksi",['TERLAMBAT','TEPAT WAKTU'])
-    res = dfm1.loc[dfm1['prediksi'] == choice]
-    st.subheader('Prediksi '+str(choice)+':'+str(res.shape[0]))
-    st.write(res)
+    
+    res1 =  dfm1.loc[dfm1['prediksi'] == 'TERLAMBAT']
+    res2 =  dfm1.loc[dfm1['prediksi'] == 'TEPAT WAKTU']
+    
+    
+    st.subheader('Semua Prediksi :'+str(dfm1.shape[0]))     
+    st.write(dfm1)
+
+    st.subheader('Prediksi TERLAMBAT :'+str(res1.shape[0]))      
+    st.write(res1)       
+
+    st.subheader('Prediksi TEPAT WAKTU:'+str(res2.shape[0]))      
+    st.write(res2)
+    
     st.markdown(get_table_download_link(dfm1,filename = "datahasilNaiveBayes.xlsx"), unsafe_allow_html=True)
     
 #END OF NB
@@ -226,10 +253,19 @@ def knn(df,df1,df2):
     sns.heatmap(confusionmatrix, annot=True, fmt='g',cmap='Blues')
     st.write(fig)
     st.subheader('Hasil Perhitungan')
-    choice = st.selectbox("Pilih Prediksi",['TERLAMBAT','TEPAT WAKTU'])
-    res = dfm1.loc[dfm1['prediksi'] == choice]
-    st.subheader('Prediksi '+str(choice)+':'+str(res.shape[0]))
-    st.write(res)
+    res1 =  dfm1.loc[dfm1['prediksi'] == 'TERLAMBAT']
+    res2 =  dfm1.loc[dfm1['prediksi'] == 'TEPAT WAKTU']
+    
+    
+    st.subheader('Semua Prediksi :'+str(dfm1.shape[0]))     
+    st.write(dfm1)
+
+    st.subheader('Prediksi TERLAMBAT :'+str(res1.shape[0]))      
+    st.write(res1)       
+
+    st.subheader('Prediksi TEPAT WAKTU:'+str(res2.shape[0]))      
+    st.write(res2)
+    
     st.markdown(get_table_download_link(dfm1,filename = "datahasiKNN.xlsx"), unsafe_allow_html=True)
 #END OF KNN     
 
