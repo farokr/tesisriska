@@ -140,7 +140,7 @@ def dt(df,df1,df2):
     st.subheader('Tree Visualization')
     fig = plt.figure(figsize=(80,40))
     _ = tree.plot_tree(model,
-                       feature_names=['jk','ips_1', 'ips_2', 'ips_3','ips_4', 'ips_5', 'ips_6', 'ips_7', 'ipk', 'total_sks', 'pekerjaan'],  
+                       feature_names=['jk','ips_1', 'ips_2', 'ips_3','ips_4', 'ips_5', 'ips_6', 'ips_7', 'total_sks', 'pekerjaan'],  
                        class_names=['TERLAMBAT','TEPAT WAKTU'],
                        filled=True)
     st.pyplot(fig,clear_figure=True,dpi=100)
