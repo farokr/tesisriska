@@ -16,11 +16,16 @@ import io
 
 arr_map = {1:'TEPAT WAKTU', 0:'TERLAMBAT'}
 
+#pemrosesan dari data mentah menjadi data siap di proses
 def proses_data(df):
+    
     df = df.drop(['no', 'NIM', 'nama','program_studi','ipk'],axis =1)
+    
     df['jk'] = df['jk'].str.strip().replace({'L': 0, 'P': 1,})
     df['kelulusan'] = df['kelulusan'].str.strip().replace({'TERLAMBAT': 0, 'TEPAT WAKTU': 1})
     df['pekerjaan'] = df['pekerjaan'].str.strip().replace({'KARYAWAN': 0, 'MAHASISWA': 1})
+    
+    
     df['ips_1'] = df['ips_1'].apply(lambda x: x.replace(',','.'))
     df['ips_2'] = df['ips_2'].apply(lambda x: x.replace(',','.'))
     df['ips_3'] = df['ips_3'].apply(lambda x: x.replace(',','.'))
@@ -28,6 +33,7 @@ def proses_data(df):
     df['ips_5'] = df['ips_5'].apply(lambda x: x.replace(',','.'))
     df['ips_6'] = df['ips_6'].apply(lambda x: x.replace(',','.'))
     df['ips_7'] = df['ips_7'].apply(lambda x: x.replace(',','.'))
+    
     return df
 
 def get_table_download_link(df,txt = 'Download hasil Perhitungan',filename = "datahasil.xlsx"):
@@ -49,20 +55,36 @@ def getdata(csv,separator=';') -> pd.DataFrame:
     
     
 def eda():
-    st.title("Klasifikasi Kelulusan Mahasiswa")
+    
     st.header("Eksplorasi Data")
 
     source_df = getdata('DATA_MAHASISWA.csv',separator=';')
+    #df = proses_data(source_df)
+    df = source_df.copy()
+    
     st.subheader("Sumber Data "+str(source_df.shape))
     #if st.checkbox("Show Source Data"):
     st.write(source_df) 
     
     
+    df = df.drop(['no', 'NIM', 'nama','program_studi','ipk'],axis =1)
+    st.subheader("Penghilangan Kolom"+str(df.shape))
+    st.write(df) 
     
-    df = proses_data(source_df)
-    st.subheader("Data Hasil Proses "+str(df.shape))
-    st.write(df)
+    df['jk'] = df['jk'].str.strip().replace({'L': 0, 'P': 1,})
+    df['kelulusan'] = df['kelulusan'].str.strip().replace({'TERLAMBAT': 0, 'TEPAT WAKTU': 1})
+    df['pekerjaan'] = df['pekerjaan'].str.strip().replace({'KARYAWAN': 0, 'MAHASISWA': 1})
+    df['ips_1'] = df['ips_1'].apply(lambda x: x.replace(',','.'))
+    df['ips_2'] = df['ips_2'].apply(lambda x: x.replace(',','.'))
+    df['ips_3'] = df['ips_3'].apply(lambda x: x.replace(',','.'))
+    df['ips_4'] = df['ips_4'].apply(lambda x: x.replace(',','.'))
+    df['ips_5'] = df['ips_5'].apply(lambda x: x.replace(',','.'))
+    df['ips_6'] = df['ips_6'].apply(lambda x: x.replace(',','.'))
+    df['ips_7'] = df['ips_7'].apply(lambda x: x.replace(',','.'))
+    st.subheader("Pengkodean Kolom Teks"+str(df.shape))
+    st.write(df) 
     
+    st.subheader("Pemeriksaan Keseimbangan Kolom Kelulusan")
     fig1= plt.figure()
     sns.countplot(x ='kelulusan', data=df)
     plt.title('0: TERLAMBAT || 1: TEPAT WAKTU', fontsize=14)
@@ -91,7 +113,9 @@ def dt(df,df1,df2):
     st.header("Decision Tree")
      
     dfm1 = df.copy()
-    parameter  = st.slider('Maximal Depth', min_value=2, max_value=10, step=1, value=4)
+    #parameter  = st.slider('Maximal Depth', min_value=2, max_value=10, step=1, value=4)
+    parameter  = st.text_input("Maximal Depth", value=4)
+    parameter = int(parameter)
     
     model = DecisionTreeClassifier(max_depth = parameter).fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
     ypred = model.predict(df1.drop('kelulusan',axis=1))
@@ -229,7 +253,10 @@ def knn(df,df1,df2):
     plt.ylabel('Accuracy')
     st.write(fig3)
     
-    parameter  = st.slider('Nilai K', min_value=2, max_value=10, step=1, value=3)
+    #parameter  = st.slider('Nilai K', min_value=2, max_value=10, step=1, value=3)
+    parameter  = st.text_input("Nilai K", value=3)
+    parameter = int(parameter)
+    
     model =  KNeighborsClassifier(n_neighbors=parameter).fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
     ypred = model.predict(df1.drop('kelulusan',axis=1))
     
@@ -270,15 +297,21 @@ def knn(df,df1,df2):
 #END OF KNN     
 
 def apps():
-    st.title("Klasifikasi Kelulusan Mahasiswa")
     st.header("Aplikasi Perhitungan")
     data = st.file_uploader("Upload a Dataset", type=["csv"])
     if data is not None:
+        
+        
         df = pd.read_csv(data,sep=';')
+        st.subheader("Sumber Data "+str(df.shape))
         st.dataframe(df)
+        
         df1 = proses_data(df)
-        df2 = pd.DataFrame()
+        st.subheader("Data Hasil Proses "+str(df1.shape))
+        st.dataframe(df1)
+        
         sm = SMOTE()
+        df2 = pd.DataFrame()
         df2, df2['kelulusan'] = sm.fit_resample(df1.drop('kelulusan',axis=1), df1['kelulusan'])
         
         
@@ -296,7 +329,7 @@ def apps():
     
     
 def main():
-
+    st.sidebar.title("Klasifikasi Kelulusan Mahasiswa")
     activities = ['Eksplorasi Data','Aplikasi Perhitungan']
     choice = st.sidebar.selectbox("Select Activities",activities)
     
