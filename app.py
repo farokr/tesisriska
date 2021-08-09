@@ -16,16 +16,17 @@ import io
 
 arr_map = {1:'TEPAT WAKTU', 0:'TERLAMBAT'}
 
-#pemrosesan dari data mentah menjadi data siap di proses
+#pemrosesan data mentah menjadi data siap di proses
 def proses_data(df):
+    #dropping kolom
+    df = df.drop(['no', 'NIM', 'nama','program_studi','ipk','total_sks'],axis =1)
     
-    df = df.drop(['no', 'NIM', 'nama','program_studi','ipk'],axis =1)
-    
+    #pengkodean data text menjadi kode angka
     df['jk'] = df['jk'].str.strip().replace({'L': 0, 'P': 1,})
     df['kelulusan'] = df['kelulusan'].str.strip().replace({'TERLAMBAT': 0, 'TEPAT WAKTU': 1})
     df['pekerjaan'] = df['pekerjaan'].str.strip().replace({'KARYAWAN': 0, 'MAHASISWA': 1})
     
-    
+    #mengubah notasi koma menjadi notasi titik
     df['ips_1'] = df['ips_1'].apply(lambda x: x.replace(',','.'))
     df['ips_2'] = df['ips_2'].apply(lambda x: x.replace(',','.'))
     df['ips_3'] = df['ips_3'].apply(lambda x: x.replace(',','.'))
@@ -67,13 +68,17 @@ def eda():
     st.write(source_df) 
     
     
-    df = df.drop(['no', 'NIM', 'nama','program_studi','ipk'],axis =1)
+    #dropping kolom
+    df = df.drop(['no', 'NIM', 'nama','program_studi','ipk','total_sks'],axis =1)
     st.subheader("Penghilangan Kolom"+str(df.shape))
     st.write(df) 
     
+    #pengkodean data text menjadi kode angka
     df['jk'] = df['jk'].str.strip().replace({'L': 0, 'P': 1,})
     df['kelulusan'] = df['kelulusan'].str.strip().replace({'TERLAMBAT': 0, 'TEPAT WAKTU': 1})
     df['pekerjaan'] = df['pekerjaan'].str.strip().replace({'KARYAWAN': 0, 'MAHASISWA': 1})
+    
+    #mengubah notasi koma menjadi notasi titik
     df['ips_1'] = df['ips_1'].apply(lambda x: x.replace(',','.'))
     df['ips_2'] = df['ips_2'].apply(lambda x: x.replace(',','.'))
     df['ips_3'] = df['ips_3'].apply(lambda x: x.replace(',','.'))
@@ -114,7 +119,7 @@ def dt(df,df1,df2):
      
     dfm1 = df.copy()
     #parameter  = st.slider('Maximal Depth', min_value=2, max_value=10, step=1, value=4)
-    parameter  = st.text_input("Maximal Depth", value=4)
+    parameter  = st.number_input("Maximal Depth", value=4)
     parameter = int(parameter)
     
     model = DecisionTreeClassifier(max_depth = parameter).fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
@@ -140,7 +145,9 @@ def dt(df,df1,df2):
     st.subheader('Tree Visualization')
     fig = plt.figure(figsize=(80,40))
     _ = tree.plot_tree(model,
-                       feature_names=['jk','ips_1', 'ips_2', 'ips_3','ips_4', 'ips_5', 'ips_6', 'ips_7', 'total_sks', 'pekerjaan'],  
+                       feature_names=['jk','ips_1', 'ips_2', 'ips_3',
+       'ips_4', 'ips_5', 'ips_6', 'ips_7', 'ipk', 'sks_1', 'sks_2', 'sks_3',
+       'sks_4', 'sks_5', 'sks_6', 'sks_7', 'pekerjaan'],  
                        class_names=['TERLAMBAT','TEPAT WAKTU'],
                        filled=True)
     st.pyplot(fig,clear_figure=True,dpi=100)
@@ -171,26 +178,16 @@ def dt(df,df1,df2):
     
     
 #end of dt()
-
-@st.cache
-def trainnb(df,df2,df1):
-    model = GaussianNB().fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
-    ypred = model.predict(df1.drop('kelulusan',axis=1))
-    df['prediksi'] = ypred
-    df['prediksi'] = df['prediksi'].map(arr_map)
-    return df
-    
-    
      
 def nb(df,df1,df2):
     st.header("Naive Bayes")
-    #dfm1 = df.copy()
+    dfm1 = df.copy()
     
-    #model = GaussianNB().fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
-    #ypred = model.predict(df1.drop('kelulusan',axis=1))
-    #dfm1['prediksi'] = ypred
-    #dfm1['prediksi'] = dfm1['prediksi'].map(arr_map)
-    dfm1 = trainnb(df,df2,df1)
+    model = GaussianNB().fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
+    ypred = model.predict(df1.drop('kelulusan',axis=1))
+    dfm1['prediksi'] = ypred
+    dfm1['prediksi'] = dfm1['prediksi'].map(arr_map)
+
     
     recall1 = '{:.2f}%'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TEPAT WAKTU' )*100)
     recall2 = '{:.2f}%'.format(metrics.recall_score(dfm1['kelulusan'], dfm1['prediksi'],pos_label='TERLAMBAT' )*100) 
@@ -254,7 +251,7 @@ def knn(df,df1,df2):
     st.write(fig3)
     
     #parameter  = st.slider('Nilai K', min_value=2, max_value=10, step=1, value=3)
-    parameter  = st.text_input("Nilai K", value=3)
+    parameter  = st.number_input("Nilai K", value=3)
     parameter = int(parameter)
     
     model =  KNeighborsClassifier(n_neighbors=parameter).fit(df2.drop('kelulusan',axis=1), df2['kelulusan'])
