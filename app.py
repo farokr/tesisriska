@@ -50,7 +50,7 @@ def get_table_download_link(df,txt = 'Download hasil Perhitungan',filename = "da
 #end of get_table_download_link
 
 
-@st.cache
+#@st.cache
 def getdata(csv,separator=';') -> pd.DataFrame:
     return pd.read_csv(csv,sep=separator)
     
